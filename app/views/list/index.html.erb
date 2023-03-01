@@ -1,0 +1,91 @@
+<h1>TODO List</h1>
+
+<hr>
+<br>
+
+
+<div class="mb-3">
+  <label for="exampleFormControlTextarea1" class="form-label">Add TODO here</label>
+  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+</div>
+ <div class="col-auto">
+    <button type="submit" class="btn btn-primary mb-3">ADD</button>
+  </div>
+<br>
+<br>
+<hr>
+
+
+<% @lists.each do |list| %>
+    
+
+<div class="input-group mb-3 <%= list.id %>">
+  <div class="input-group-text">
+    <input class="form-check-input mt-0 <%= list.id %>" type="checkbox" style="font-size:2rem;" value="" onclick="strike_text(this)" aria-label="Checkbox for following text input"
+    <% if list.completed %>
+        checked
+    <% end %>
+    >
+  </div>
+  <input type="text" class="form-control <%= list.id %>" aria-label="Text input with checkbox" value=' <%= list.title  %> '
+    <% if list.completed %>
+        style = "text-decoration:line-through;font-size:2rem;"
+    <% else %>
+        style="font-size:2rem;"
+    <% end %>
+    >
+    <div class="input-group-text">
+        <button type="button" class="btn btn-danger <%= list.id %>" style="font-size:1rem;" onclick="remove_task(this)">X</button>  
+    </div>
+</div>
+
+<% end %>
+
+
+
+<script>
+
+
+function remove_task(e){
+    $(document).ready(function(){ 
+        document.getElementsByClassName(e.classList[2])[0].style.display = 'none'
+
+        $.ajax({
+                url: '/remove_list/' + e.classList[2],
+                type: 'GET',
+                dataType: 'json',
+                error: function (xhr, status, error) {
+                console.error('AJAX Error: ' + status + error)
+                },
+                success: function (response) {
+                
+                }
+        })
+    });
+}
+
+function strike_text(e){
+  if (e.checked == true){
+    document.getElementsByClassName(e.classList[2])[2].style.textDecoration = 'line-through';
+    call_update(e.classList[2], true)
+  } else{
+    document.getElementsByClassName(e.classList[2])[2].style.textDecoration = 'none';
+    call_update(e.classList[2], false)
+  }
+
+}
+
+function call_update(id, value){
+    $.ajax({
+        url: '/update_list/' + id + '?value=' + value,
+        type: 'GET',
+        dataType: 'json',
+        error: function (xhr, status, error) {
+        console.error('AJAX Error: ' + status + error)
+        },
+        success: function (response) {
+        }
+    })
+}
+
+</script>
